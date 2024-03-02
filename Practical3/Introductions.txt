@@ -1,5 +1,5 @@
 Hello. 
-My name is Rob.
-I like drinking tea and eating chocolate biscuits.
-I am enjoying teaching IBI1 in person again 
+My name is Liu Zimo.
+I like sports and eating.
+I am enjoying learning IBI1 in ZJU 
 I am happy that I can push my repo from Visual Studio Code to GitHub
