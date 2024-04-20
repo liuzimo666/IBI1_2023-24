@@ -15,7 +15,7 @@ gamma = 0.05  # Recovery rate
 t_max = 100
 dt = 1
 t = np.arange(0, t_max, dt)
-
+# write the name
 # Initialize arrays
 S = np.zeros(t_max)
 I = np.zeros(t_max)
