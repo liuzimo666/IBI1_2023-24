@@ -13,4 +13,4 @@ bars_bought, money_left = calculate_chocolate_bars(total_money, price)
 
 # print the result
 print(f"you can buy {bars_bought} bars.")
-print(f" you will left with{money_left} .")
+print(f" you will left with {money_left} .")

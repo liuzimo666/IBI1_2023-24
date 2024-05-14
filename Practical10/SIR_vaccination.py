@@ -2,51 +2,44 @@ import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib import cm
 
-# Parameters
-N = 1000  # Total population
-I0 = 1    # Initial number of infected
-R0 = 0    # Initial number of recovered
-V0 = 0.1 * N  # Initial number of vaccinated (10% of the population)
-S0 = N - I0 - R0 - V0  # Initial number of susceptible
-beta = 0.3  # Infection rate
-gamma = 0.05  # Recovery rate
+# Define base variable
+N = 10000  #  Total population
+beta = 0.3  # Probability of infection
+gamma = 0.05  # Probability of recovery
 
-# Time steps
-t_max = 100
-dt = 1
-t = np.arange(0, t_max, dt)
-# write the name
-# Initialize arrays
-S = np.zeros(t_max)
-I = np.zeros(t_max)
-R = np.zeros(t_max)
-V = np.zeros(t_max)
+# Vaccination rates
+vaccination_rates = np.linspace(0, 100, 11)
 
-# Set initial conditions
-S[0] = S0
-I[0] = I0
-R[0] = R0
-V[0] = V0
+# Store the number of infected people per vaccination rate
 
-# SIRV model
-for i in range(t_max - 1):
-    dSdt = -beta * S[i] * I[i] / N  # Rate of change of susceptible
-    dIdt = beta * S[i] * I[i] / N - gamma * I[i]  # Rate of change of infected
-    dRdt = gamma * I[i]  # Rate of change of recovered
-    dVdt = 0  # Rate of change of vaccinated (constant)
-    
-    # Update populations
-    S[i + 1] = S[i] + dSdt * dt
-    I[i + 1] = I[i] + dIdt * dt
-    R[i + 1] = R[i] + dRdt * dt
-    V[i + 1] = V[i] + dVdt * dt
+I_arrs = {rate: [] for rate in vaccination_rates}
 
-# Plot the results
-plt.plot(t, S, label='Susceptible', color=cm.viridis(20))
-plt.plot(t, I, label='Infected', color=cm.viridis(50))
-plt.plot(t, R, label='Recovered', color=cm.viridis(80))
-plt.plot(t, V, label='Vaccinated', color=cm.viridis(110))
+for rate in vaccination_rates:
+    # The number of susceptible persons, infected persons and recovered persons is calculated based on the vaccination rate
+    S = N * (1 - rate / 100)
+    I = 1
+    R = N - S - I
+
+    # Creates an array to track changes in variables over time
+    time = np.arange(1000)
+    S_arr = [S] * len(time)
+    I_arr = [I] * len(time)
+    R_arr = [R] * len(time)
+
+    for t in range(1, len(time)):
+        new_infections = beta * S_arr[t-1] * I_arr[t-1] / N
+        I_arr[t] = I_arr[t-1] + new_infections - gamma * I_arr[t-1]
+        S_arr[t] = S_arr[t-1] - new_infections
+        R_arr[t] = R_arr[t-1] + gamma * I_arr[t-1]
+    I_arrs[rate] = I_arr
+
+# Plot result
+plt.figure(figsize=(6, 4), dpi=150)
+for rate, I_arr in I_arrs.items():
+    plt.plot(time, I_arr, label=f'{rate}% Vaccinated')
+
 plt.xlabel('Time')
-plt.ylabel('Number of individuals')
+plt.ylabel('Number of Infected People')
+plt.title('SIR Model with Vaccination')
 plt.legend()
 plt.show()

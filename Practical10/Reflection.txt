@@ -1,0 +1,6 @@
+In this practice, I learned how to build and simulate a 2D SIR Model.
+The process was a little more complicated than I expected because of the spatial interactions that needed to be dealt with. 
+I particularly enjoyed the part where I explored how disease spreads through space, which gave me a deeper understanding of the dynamics of infectious disease.
+I found the most challenging part to be ensuring that each infected person's neighbor infection was handled correctly, and how to implement this process in code.
+The most important thing I learned was that even simple models can reveal complex phenomena, which made me more interested in using computational models to study real-world problems.
+By running the code multiple times, I observed the randomness of the model, and the pattern of disease spread was different each time, underscoring the uncertainty of disease spread in the real world.

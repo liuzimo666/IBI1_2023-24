@@ -1,39 +1,39 @@
 import numpy as np
 import matplotlib.pyplot as plt
-from matplotlib import cm
 
-#Define the space size and time step
-n, m = 100, 100  
-dt = 0.1  
-dx = 1  
-iterations = 1000  
+# initialization parameter
+N = 100  # sizing grid
+population = np.zeros((N, N))  # Initializes the population array
+outbreak = np.random.choice(range(N), 2)  # Pick a random point
+population[outbreak[0], outbreak[1]] = 1  # Set this point to an infected state
+beta = 0.3  # Infection probability
+gamma = 0.05  # Recovery probability
 
-# Initialize S, I, R
-S = np.ones((n, m))
-I = np.zeros((n, m))
-R = np.zeros((n, m))
-# Place an infected person in the center
-I[n//2, m//2] = 1
-
-# Define disease transmission parameters
-beta = 0.3  
-gamma = 0.05  
-
-for _ in range(iterations):
-    # calculate S, I, R
-    S_new = np.roll(S, 1, axis=(0, 1)) * np.roll(I, -1, axis=(0, 1)) / (dx * dx)
-    I_new = I + dt * (-beta * S * I + gamma * I)
-    R_new = np.roll(R, -1, axis=(0, 1)) * np.roll(I, 1, axis=(0, 1)) / (dx * dx)
-    
-    S = S_new
-    I = I_new
-    R = R_new
-
-# plot
-plt.figure(figsize=(10, 10))
-plt.imshow(I, cmap='viridis', interpolation='none')
-plt.title('2D SIR Model')
-plt.xlabel('X Position')
-plt.ylabel('Y Position')
-plt.colorbar()
+# Draw initial state
+plt.figure(figsize=(6, 4), dpi=150)
+plt.imshow(population, cmap='viridis', interpolation='nearest')
+plt.title("Initial State")
 plt.show()
+
+for t in range(100):  #100 time points
+    # Find all the infected spots
+    infected_points = np.argwhere(population == 1)
+    for point in infected_points:
+        # Infect 
+        for dx in [-1, 0, 1]:
+            for dy in [-1, 0, 1]:
+                if dx == 0 and dy == 0:
+                    continue 
+                new_x, new_y = point[0] + dx, point[1] + dy
+                if 0 <= new_x < N and 0 <= new_y < N:
+                    if population[new_x, new_y] == 0 and np.random.rand() < beta:
+                        population[new_x, new_y] = 1 
+        # recovery
+        if np.random.rand() < gamma:
+            population[point[0], point[1]] = 2  # Set the infected person to recovery status
+    
+    # Plot
+    plt.figure(figsize=(6, 4), dpi=150)
+    plt.imshow(population, cmap='viridis', interpolation='nearest')
+    plt.title(f"Time Step {t}")
+    plt.show()

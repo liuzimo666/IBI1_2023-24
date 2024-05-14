@@ -12,7 +12,7 @@ class Students:
               f"Group Project Score: {self.group_project_score}, "
               f"Exam Score: {self.exam_score}")
 
-# creat a student's information
+# creat a student's information（example）
 student1 = Students("Alice", "BMI", 85, 90, 92)
 
 # use print_details to print the information

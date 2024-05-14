@@ -1,56 +1,34 @@
 import numpy as np
 import matplotlib.pyplot as plt
-from matplotlib import cm
 
-# 定义基本参数
-N = 10000  # 总人口数
-I0 = 1  # 初始感染者数量
-S0 = N - I0  # 初始易感者数量
-R0 = 0  # 初始康复者数量
-V0 = int(0.1 * N)  # 初始接种者数量，占总人口的10%
+# Define base variable
+N = 10000  # Total population
+S = 9999  # Number of initial susceptibles
+I = 1     # Initial number of infected persons
+R = 0     # Number of initial recoveries
+beta = 0.3  # probability of infection
+gamma = 0.05  # Probability of recovery
 
-# 定义疾病传播参数
-beta = 0.3  # 感染率
-gamma = 0.05  # 康复率
+# Creates an array to track changes in variables over time
+time = np.arange(1000)  
+S_arr = [S] * len(time)
+I_arr = [I] * len(time)
+R_arr = [R] * len(time)
 
-# 定义时间步长和模拟时间
-t = np.arange(0, 400, 1)  # 时间步长为1
-S, I, R, V = S0, I0, R0, V0
+for t in range(1, len(time)):
+    # Infection of susceptible persons
+    new_infections = beta * S_arr[t-1] * I_arr[t-1] / N
+    I_arr[t] = I_arr[t-1] + new_infections - gamma * I_arr[t-1]
+    S_arr[t] = S_arr[t-1] - new_infections
+    R_arr[t] = R_arr[t-1] + gamma * I_arr[t-1]
 
-# 存储数据用于绘图
-S_data = []
-I_data = []
-R_data = []
-V_data = []
-
-for t_i in t:
-    # 计算当前时间步的S, I, R, V
-    dSdt = -beta * S * I / N
-    dIdt = beta * S * I / N - gamma * I
-    dRdt = gamma * I
-    dVdt = 0  # 接种者数量不变
-
-    # 更新S, I, R, V
-    S += dSdt
-    I += dIdt
-    R += dRdt
-    V += dVdt
-
-    # 存储数据
-    S_data.append(S)
-    I_data.append(I)
-    R_data.append(R)
-    V_data.append(V)
-
-# 绘制结果
-plt.figure(figsize=(10, 6))
-plt.plot(t, I_data, color=cm.viridis(30), label='Infected')
-plt.plot(t, R_data, color=cm.viridis(150), label='Recovered')
-plt.plot(t, V_data, color=cm.viridis(200), label='Vaccinated')
-plt.plot(t, S_data, color=cm.viridis(80), linestyle='--', label='Susceptible')
+# Plot result
+plt.figure(figsize=(6, 4), dpi=150)
+plt.plot(time, S_arr, label='Susceptible')
+plt.plot(time, I_arr, label='Infected')
+plt.plot(time, R_arr, label='Recovered')
 plt.xlabel('Time')
 plt.ylabel('Number of People')
-plt.title('SIR Model with Vaccination')
+plt.title('SIR Model')
 plt.legend()
 plt.show()
-
