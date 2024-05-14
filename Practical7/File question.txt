@@ -1,0 +1,6 @@
+How has the relationship between the DALYs in China and the UK changed over time?
+Are they becoming more similar, less similar?
+
+the code starts at the line 63
+
+analysis:The mean DALYs in China and the mean DALYs in UK both decrease as the time goes. The plot visualizes the trend of DALYs over time for both countries. It seems that over the years, the two lines are showing a tendency to converge, suggesting that the DALYs in China and the UK might be becoming more similar over time.

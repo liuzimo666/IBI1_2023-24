@@ -28,14 +28,14 @@ else:
 X = True
 Y = False
 # Create variable W which encodes the Boolean variable 'either X or Y'
-W = X or Y
+W = (X and not Y) or (not X and Y)
 # Truth table for W:
 # X | Y | W
-# T | T | T
+# T | T | F
 # T | F | T
 # F | T | T
 # F | F | F
-# Comment: The truth table for W shows that W is True when either X or Y (or both) are True.
+# Comment: The truth table for W shows that W is True when either X or Y are True.
 #          When both X and Y are False, W is also False.
 print("X:", X)
 print("Y:", Y)
