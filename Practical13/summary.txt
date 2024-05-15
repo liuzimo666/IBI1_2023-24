@@ -1,0 +1,10 @@
+The explain of the code
+1. Read data from the BLOSUM62 matrix.
+2. Implement a simple global alignment algorithm for comparing two protein sequences.
+3. Calculate the score for each alignment and determine the percentage of the same amino acids.
+4. The similarity of three sets of sequences (human-mouse, human-rat, mouse-rat) was analyzed.
+5. Based on the results of the analysis, determine which rodent is a better model for studying human SLC6A4 gene variants.
+
+
+finding:By calculating the BLOSUM62 score and the percentage of identical amino acids, we quantified the similarity between the sequences.
+Based on BLOSUM62 scores, the SLC6A4 gene sequence of mouse showed the highest similarity to that of humans, suggesting that mouse may be a good model organism for studying human SLC6A4 gene variation.
