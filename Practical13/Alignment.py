@@ -67,7 +67,7 @@ for (seq1_name, seq2_name), (score, identity) in results.items():
 # Based on the score, determine which species' sequence is most closely related to humans
 closest_to_human = max(results, key=lambda item: item[1][0])
 
-# Determine which rodent is the better model based on the score
+# Determine which rodent is the better model based on score
 better_model = max(('mouse', 'rat'), key=lambda x: results[('human', x)][0])
 
 print(f"The sequence most closely related to human is {closest_to_human}.")
