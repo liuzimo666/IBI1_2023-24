@@ -1,17 +1,17 @@
-import re
+def count_overlapping_repeats(seq, repeats):
+    count = 0
+    for i in range(len(seq) - len(repeats[0]) + 1):  # Iterate from the first character to the last possible complete match
+        for pattern in repeats:  # Check each repeating pattern
+            if seq[i:i+len(pattern)] == pattern:  
+                count += 1  
+    return count
 
-# Defines a sequence that contains repeating elements
+# Define sequences and repeat patterns
 seq = 'ATGCAATCGGTGTGTCTGTTCTGAGAGGGCCTAA'
+repeats = ['GTGTGT', 'GTCTGT']
 
-# Define patterns for repeating elements, where regular expressions are used to match overlapping GTGTGT and GTCTGT
-pattern = re.compile(r'GT(G|C)TGT')
+# Call the function and print the result
+total_repeats = count_overlapping_repeats(seq, repeats)
+print(f"Total number of overlapping repeat elements: {total_repeats}")
 
-# Find all matches
-matches = pattern.findall(seq)
-
-# Calculate the number of matches
-count = len(matches)
-
-# Print and result
-print(f"Total number of overlapping repeat elements: {count}")
 
