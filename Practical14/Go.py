@@ -1,83 +1,93 @@
-import xml.etree.ElementTree as ET
-from xml.sax import make_parser
-from xml.sax.handler import ContentHandler
+import xml.dom.minidom as minidom
+import xml.sax as sax
+from datetime import datetime
 import matplotlib.pyplot as plt
-import datetime
 
-# Define a SAX ContentHandler to parse the XML file
-class GOCountHandler(ContentHandler):
+# Define the handler for SAX
+class GOHandler(sax.ContentHandler):
     def __init__(self):
-        self.counts = {'molecular_function': 0, 'biological_process': 0, 'cellular_component': 0}
-        self.current_ontology = None
+        self.current_data = ""
+        self.namespace = ""
+        self.counts = {"molecular_function": 0, "biological_process": 0, "cellular_component": 0}
 
     def startElement(self, tag, attributes):
-        if tag == 'namespace':
-            self.current_ontology = attributes.get('id', '').lower()
+        self.current_data = tag
+
+    def characters(self, content):
+        if self.current_data == "namespace":
+            self.namespace = content.strip()
 
     def endElement(self, tag):
-        if tag == 'term':
-            if self.current_ontology:
-                self.counts[self.current_ontology] += 1
-            self.current_ontology = None
+        if tag == "namespace" and self.namespace in self.counts:
+            self.counts[self.namespace] += 1
+        self.current_data = ""
 
-    def getCounts(self):
-        return self.counts
-
-# The definition function parses the XML file using the DOM API
-def parse_xml_dom(xml_file):
-    tree = ET.parse(xml_file)
-    root = tree.getroot()
-    counts = {'molecular_function': 0, 'biological_process': 0, 'cellular_component': 0}
-    for child in root:
-        if child.tag == 'namespace':
-            ontology = child.get('id').lower()
-            if ontology in counts:
-                counts[ontology] += len(child.findall('term'))
+# Function to parse using DOM
+def parse_with_dom(file_path):
+    counts = {"molecular_function": 0, "biological_process": 0, "cellular_component": 0}
+    dom_tree = minidom.parse(file_path)
+    terms = dom_tree.getElementsByTagName("term")
+    for term in terms:
+        namespaces = term.getElementsByTagName("namespace")
+        for ns in namespaces:
+            namespace = ns.childNodes[0].data.strip()
+            if namespace in counts:
+                counts[namespace] += 1
     return counts
 
-# The definition function parses XML files using the SAX API
-def parse_xml_sax(xml_file):
-    parser = make_parser()
-    handler = GOCountHandler()
+# Function to parse using SAX
+def parse_with_sax(file_path):
+    handler = GOHandler()
+    parser = sax.make_parser()
     parser.setContentHandler(handler)
-    parser.parse(xml_file)
-    return handler.getCounts()
+    parser.parse(file_path)
+    return handler.counts
 
-# Measure and record time
-def measure_time(func, *args):
-    start_time = datetime.datetime.now()
-    result = func(*args)
-    end_time = datetime.datetime.now()
-    return result, end_time - start_time
+# Main function
+def main():
+    file_path = 'go_obo.xml'
 
-xml_file = 'go_obo.xml'
+    # Time and parse with DOM
+    start_time = datetime.now()
+    dom_counts = parse_with_dom(file_path)
+    dom_duration = datetime.now() - start_time
 
-# Parsing using the DOM API
-dom_counts, dom_time = measure_time(parse_xml_dom, xml_file)
+    # Time and parse with SAX
+    start_time = datetime.now()
+    sax_counts = parse_with_sax(file_path)
+    sax_duration = datetime.now() - start_time
 
-# Parsing using the SAX API
-sax_counts, sax_time = measure_time(parse_xml_sax, xml_file)
+    # Print results
+    print("DOM counts:", dom_counts)
+    print("SAX counts:", sax_counts)
+    print("DOM duration:", dom_duration)
+    print("SAX duration:", sax_duration)
+    
+    # Comment on which one ran fastest
+    if dom_duration < sax_duration:
+        print("DOM was faster")
+    else:
+        print("SAX was faster")
 
-# Print result
-print(f"DOM API counts: {dom_counts}")
-print(f"SAX API counts: {sax_counts}")
+    # Plotting the results
+    labels = list(dom_counts.keys())
+    dom_values = list(dom_counts.values())
+    sax_values = list(sax_counts.values())
 
-# Plot the result
-labels = ['Molecular Function', 'Biological Process', 'Cellular Component']
-dom_bars = dom_counts.values()
-sax_bars = sax_counts.values()
+    x = range(len(labels))
+    
+    fig, ax = plt.subplots()
+    ax.bar(x, dom_values, width=0.4, label='DOM', align='center')
+    ax.bar(x, sax_values, width=0.4, label='SAX', align='edge')
+    
+    ax.set_xlabel('Ontology')
+    ax.set_ylabel('Number of GO Terms')
+    ax.set_title('GO Terms Count in Ontologies')
+    ax.set_xticks(x)
+    ax.set_xticklabels(labels)
+    ax.legend()
 
-plt.figure(figsize=(10, 6))
-plt.bar(labels, dom_bars, label='DOM API')
-plt.bar(labels, sax_bars, label='SAX API', alpha=0.5)
-plt.legend()
-plt.title('GO Term Counts in Each Ontology')
-plt.show()
+    plt.show()
 
-# Record the time and compare
-print(f"DOM API time: {dom_time}")
-print(f"SAX API time: {sax_time}")
-if dom_time < sax_time:
-    print("DOM API was faster.")
-else:
-    print("SAX API was faster.")
+if __name__ == "__main__":
+    main()
